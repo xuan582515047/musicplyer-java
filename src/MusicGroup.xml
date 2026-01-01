@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<groupList> 
+  <group name="孙燕姿" addDate="2025-12-08 00:02:25"> 
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\孙燕姿 - 半句再见.mp3</filePath>  
+      <addDate>2025-12-08 23:38:45</addDate> 
+    </sound>  
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\孙燕姿 - 我怀念的.mp3</filePath>  
+      <addDate>2025-12-09 15:10:54</addDate> 
+    </sound>  
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\孙燕姿 - 当冬夜渐暖.mp3</filePath>  
+      <addDate>2025-12-20 14:14:33</addDate> 
+    </sound> 
+  </group>  
+  <group name="我喜欢" addDate="2025-12-09 23:29:16"> 
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\菲菲公主（陆绮菲） - 第57次取消发送.mp3</filePath>  
+      <addDate>2025-12-10 23:25:03</addDate> 
+    </sound>  
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\孙燕姿 - 半句再见.mp3</filePath>  
+      <addDate>2025-12-11 00:04:16</addDate> 
+    </sound>  
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\孙燕姿 - 开始懂了.mp3</filePath>  
+      <addDate>2025-12-30 21:36:32</addDate> 
+    </sound> 
+  </group>  
+  <group name="mn" addDate="2025-12-10 00:03:23"> 
+    <sound> 
+      <filePath>D:\java\JavaWork\MusicPlyer\MusicPlyerMoudle\src\myMusic\孙燕姿 - 半句再见.mp3</filePath>  
+      <addDate>2025-12-30 21:55:32</addDate> 
+    </sound> 
+  </group> 
+</groupList>
