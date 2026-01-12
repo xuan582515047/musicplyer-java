@@ -5,11 +5,6 @@ public class SoundBean {
     private String addDate;
 
     public SoundBean(){
-
-    }
-    public SoundBean(String filePage, String addDate){
-        this.filePath = filePage;
-        this.addDate = addDate;
     }
 
     public String getfilePath() {

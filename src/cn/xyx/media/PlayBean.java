@@ -15,28 +15,10 @@ public class PlayBean {
     private int totalSeconds;//总秒数
     private String filePath;//文件路径
     private MediaPlayer mediaPlayer;//播放器
-    private String lrcPath;//歌词路径
     private Label labDelete;//删除图标的标签
 
 
     public PlayBean(){
-    }
-
-    public PlayBean(int id, String soundName, String artist, String album, String length, String time, String filePath, WritableImage image, int totalSeconds, MediaPlayer mediaPlayer, String lrcPath, Label labDelete){
-        this.id = id;
-        this.soundName = soundName;
-        this.artist = artist;
-        this.album = album;
-        this.length = length;
-        this.time = time;
-        this.filePath = filePath;
-        this.image = image;
-        this.totalSeconds = totalSeconds;
-        this.mediaPlayer = mediaPlayer;
-        this.lrcPath = lrcPath;
-        this.labDelete = labDelete;
-
-
     }
 
     public String getArtist() {
@@ -117,14 +99,6 @@ public class PlayBean {
 
     public void setMediaPlayer(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
-    }
-
-    public String getLrcPath() {
-        return lrcPath;
-    }
-
-    public void setLrcPath(String lrcPath) {
-        this.lrcPath = lrcPath;
     }
 
     public Label getLabDelete() {
