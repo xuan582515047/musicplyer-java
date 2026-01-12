@@ -49,3 +49,60 @@
     -fx-border-width: 0 0 0 0;
     -fx-background-color: #b3b0b0;
 }
+
+/* spectrum.css 或在现有CSS中添加 */
+
+/* 频谱样式 */
+.spectrum-pane {
+    -fx-background-color: transparent;
+}
+
+/* 进度条样式调整 */
+.progress-bar {
+    -fx-background-color: rgba(30, 30, 30, 0.5);
+    -fx-background-radius: 4;
+    -fx-padding: 0;
+    -fx-border-radius: 4;
+    -fx-border-color: rgba(100, 100, 100, 0.3);
+    -fx-border-width: 1;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(to right,
+    rgba(5, 237, 44, 0.2),
+    rgba(5, 237, 44, 0.4));
+    -fx-background-radius: 4;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* 频谱样式 */
+.spectrum-pane {
+    -fx-background-color: transparent;
+}
+
+/* 进度条样式调整，使其在频谱下方更协调 */
+.progress-bar {
+    -fx-background-color: rgba(40, 40, 40, 0.4);
+    -fx-background-radius: 2;
+    -fx-padding: 0;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: rgba(5, 237, 44, 0.25);
+    -fx-background-radius: 2;
+    -fx-background-insets: 0;
+}
+
+/* 滑块样式 */
+.slider .thumb {
+    -fx-background-color: #2c986d;
+    -fx-background-radius: 4;
+    -fx-pref-height: 14;
+    -fx-pref-width: 6;
+    -fx-effect: dropshadow(gaussian, rgba(11, 120, 56, 0.8), 6, 0, 0, 0);
+}
+
+.slider .thumb:hover {
+    -fx-background-color: #3AFF5E;
+}

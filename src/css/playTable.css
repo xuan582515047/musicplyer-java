@@ -7,29 +7,29 @@
 .table-view .column-header{
     -fx-border-color: null;
     -fx-pref-height: 35;
-    -fx-background-color: black;
+    -fx-background-color: #000000;
 }
 /*列头文字*/
 .table-view .column-header-background .label{
-    -fx-text-fill: #cccccc;
+    -fx-text-fill: #ffffff;
     -fx-alignment: center-left;
 }
 
 
 /*单元格文字颜色、边框颜色*/
 .table-view .table-cell{
-    -fx-text-fill: #6b6b6b;
+    -fx-text-fill: #d3d3d3;
     -fx-border-color: null;
 }
 /*表格行样式*/
 .table-row-cell{
-    -fx-background-color: black;
+    -fx-background-color: #1e1e1e;
     -fx-cell-size: 30px;
     -fx-alignment: center-left;
 }
 /*选中行的背景颜色*/
 .table-row-cell:selected{
-    -fx-background-color: #373737;
+    -fx-background-color: #7c7c7b;
 }
 /*滚动条*/
 .table-view>.virtual-flow>.scroll-bar:vertical,

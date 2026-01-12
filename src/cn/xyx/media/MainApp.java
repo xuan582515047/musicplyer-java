@@ -2,7 +2,6 @@ package cn.xyx.media;
 
 import cn.xyx.Utils.ImageUtils;
 import cn.xyx.Utils.XMLUtils;
-//import com.sun.imageio.plugins.common.ImageUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -15,7 +14,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -34,21 +32,18 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.embed.swing.SwingFXUtils;
-
+import javafx.util.Duration;
 
 
 import javafx.animation.KeyValue;
-import javafx.util.Duration;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.id3.AbstractID3v1Tag;
 import org.jaudiotagger.tag.id3.AbstractID3v2Frame;
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC;
@@ -63,7 +58,6 @@ import java.util.*;
 import java.util.List;
 
 
-import static java.lang.Character.getName;
 import static javafx.util.Duration.millis;
 
 public class MainApp extends Application {
@@ -125,10 +119,21 @@ public class MainApp extends Application {
     private int currentLrcIndex;
 
     private ArrayList<BigDecimal> lrcList = new ArrayList<>();
+
+    //示波器
+    private SpectrumPane spectrumPane;
+    private Timeline spectrumTimeline;
+
+
     //总布局
     @Override
     public void start(Stage primaryStage) throws Exception {
       staticStage = primaryStage;
+
+//        XMLUtils.setSongListRefreshCallback(() -> {
+//            // 在JavaFX应用线程中刷新歌单列表
+//            javafx.application.Platform.runLater(() -> refreshGroupList());
+//        });
 
       //1.创建一个BorderPane对象
       BorderPane borderPane = new BorderPane();
@@ -136,7 +141,7 @@ public class MainApp extends Application {
       borderPane.setLeft(getLeftPane());
       borderPane.setBottom(getBottonPane());
       borderPane.setCenter(getCenterPane());
-      borderPane.setBackground(new Background(new BackgroundFill(Color.rgb(143,200,147),null,null)));
+      borderPane.setBackground(new Background(new BackgroundFill(Color.rgb(26,26,26),null,null)));
       //2.创建场景对象
       Scene scene = new Scene(borderPane, 1210, 800);
       //3.设置场景
@@ -146,6 +151,7 @@ public class MainApp extends Application {
 
       primaryStage.setTitle("xyxMusicPlayer");
       primaryStage.show();
+
     }
 
     //获取中间面板
@@ -156,20 +162,19 @@ public class MainApp extends Application {
       //2.歌单；标签
       Label lab1 = new Label("歌单");
       lab1.setTextFill(Color.WHITE);
-      BorderStroke  bs = new BorderStroke(
-              Color.WHITE,
-              Color.WHITE,
-              Color.WHITE,
-              Color.WHITE,
-              BorderStrokeStyle.SOLID,
-              BorderStrokeStyle.SOLID,
-              BorderStrokeStyle.SOLID,
-              BorderStrokeStyle.SOLID,
-              new CornerRadii(1),
-              new BorderWidths(1),
-              new Insets(1,2,1,2)
-      );
-      lab1.setBorder(new Border(bs));
+        lab1.setBorder(new Border(new BorderStroke(
+                Color.web("#0aa03c"),
+                Color.web("#0aa03c"),
+                Color.web("#0aa03c"),
+                Color.web("#0aa03c"),
+                BorderStrokeStyle.SOLID,
+                BorderStrokeStyle.SOLID,
+                BorderStrokeStyle.SOLID,
+                BorderStrokeStyle.SOLID,
+                new CornerRadii(4),
+                new BorderWidths(1),
+                new Insets(1,2,1,2)
+        )));
       lab1.setLayoutX(30);
       lab1.setLayoutY(10);
       lab1.setPrefWidth(50);
@@ -180,7 +185,7 @@ public class MainApp extends Application {
       labGroupName= new Label(playInfo == null ? "(无记录）":playInfo[0]);
       labGroupName.setLayoutX(90);
       labGroupName.setLayoutY(9);
-      labGroupName.setTextFill(Color.WHITE);
+      labGroupName.setTextFill(Color.web("#1ed760"));
       labGroupName.setFont(new Font("黑体",18));
       labGroupName.setPrefWidth(200);
       labGroupName.setPrefHeight(25);
@@ -223,7 +228,11 @@ public class MainApp extends Application {
       lab3.setPrefHeight(25);
       lab3.setTextFill(Color.WHITE);
       lab3.setAlignment(Pos.CENTER);
-      lab3.setBackground(new Background(new BackgroundFill(Color.rgb(100,100,100),null,null)));
+      lab3.setBackground(new Background(new BackgroundFill(
+                LinearGradient.valueOf("linear-gradient(to bottom, #0aa03c, #0a8a35)"),
+                new CornerRadii(4,4,0,0,false),
+                null
+      )));
       lab3.setLayoutX(30);
       lab3.setLayoutY(272);
 
@@ -262,13 +271,13 @@ public class MainApp extends Application {
       Label labLine = new Label();
       labLine.setMinHeight(0);
       labLine.setPrefHeight(5);
-      labLine.setBackground(new Background(new BackgroundFill(Color.rgb(5,237,44),null,null)));
+      labLine.setBackground(new Background(new BackgroundFill(Color.web("#1db954"),null,null)));
       labLine.setLayoutX(0);
       labLine.setLayoutY(lab3.getLayoutY() + lab3.getPrefHeight());
 
 
       AnchorPane anchorPane = new AnchorPane();
-      anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(143,200,147),null,null)));
+      anchorPane.setBackground(new Background(new BackgroundFill(Color.rgb(30,30,30),null,null)));
       anchorPane.getChildren().addAll(backImageView,lab1,labGroupName,lab2,lrcVBox,lab3,labLine);
 
 
@@ -353,8 +362,6 @@ public class MainApp extends Application {
     }
     //获取下册面板
     private BorderPane getBottonPane() {
-      //1.左侧图片
-
       //上一首
       ImageView v1 = new ImageView("img/topandbottom/lastDark.png");
       v1.setFitWidth(40);
@@ -400,6 +407,9 @@ public class MainApp extends Application {
               labplay.setOnMouseEntered(ee->{butplayImage.setImage(new Image("img/topandbottom/Play.png"));});
               labplay.setOnMouseExited(ee->{butplayImage.setImage(new Image("img/topandbottom/PlayDark.png"));});
 
+              if (spectrumPane != null) {
+                  spectrumPane.updateSpectrumWithVolume(0, false);
+              }
               this.timeline.pause();
           }else if(this.currentPlayBean.getMediaPlayer().getStatus() == MediaPlayer.Status.PAUSED){
               this.currentPlayBean.getMediaPlayer().play();
@@ -411,6 +421,10 @@ public class MainApp extends Application {
               labplay.setOnMouseExited(ee->{
                   butplayImage.setImage(new Image("img/topandbottom/PauseDark.png"));
               });
+
+              if (spectrumTimeline != null) {
+                  spectrumTimeline.play();
+              }
           }
       });
 
@@ -452,9 +466,10 @@ public class MainApp extends Application {
       labplayTime = new Label("00:00");
       labplayTime.setPrefWidth(40);
       labplayTime.setPrefHeight(78);
-      labplayTime.setTextFill(Color.rgb(243,243,238));
+      labplayTime.setTextFill(Color.web("#1ed760"));
 
-      //滚动条
+
+        //滚动条
       sliderSong = new Slider();
       sliderSong.setMinWidth(0);
       sliderSong.setMinHeight(0);
@@ -471,6 +486,33 @@ public class MainApp extends Application {
       pb1.setMaxWidth(5000);
       pb1.setPrefWidth(300);
       pb1.getStylesheets().add("css/TopAndBottomPage.css");
+
+        // 创建频谱可视化面板
+        spectrumPane = new SpectrumPane(500, 60); // 或者使用 BellCurveSpectrumPane
+
+        // 创建频谱更新动画
+        spectrumTimeline = new Timeline(new KeyFrame(Duration.millis(30), event -> {
+            if (currentPlayBean != null && currentPlayBean.getMediaPlayer() != null) {
+                boolean isPlaying = currentPlayBean.getMediaPlayer().getStatus() == MediaPlayer.Status.PLAYING;
+                double volume = currentPlayBean.getMediaPlayer().getVolume();
+
+                // 获取播放进度
+                double progress = 0;
+                if (currentPlayBean.getMediaPlayer().getTotalDuration() != null) {
+                    progress = currentPlayBean.getMediaPlayer().getCurrentTime().toSeconds() /
+                            currentPlayBean.getMediaPlayer().getTotalDuration().toSeconds();
+                }
+
+                // 添加节奏感
+                double rhythm = Math.sin(progress * Math.PI * 4) * 0.2 + 1.0;
+                spectrumPane.updateSpectrumWithVolume(volume * rhythm, isPlaying);
+            } else {
+                spectrumPane.updateSpectrumWithVolume(0, false);
+            }
+        }));
+        spectrumTimeline.setCycleCount(Timeline.INDEFINITE);
+        spectrumTimeline.play();
+
 
       //sliderSong值发生变化时
       sliderSong.valueProperty().addListener(new ChangeListener<Number>(){
@@ -498,15 +540,23 @@ public class MainApp extends Application {
           }
       });
 
-        //使用StackPane将进度条和滚动条进行层叠
-      StackPane stackPane = new StackPane();
-      stackPane.getChildren().addAll(pb1,sliderSong);
+        StackPane stackPane = new StackPane();
+        stackPane.setPrefHeight(70); // 增加高度以容纳频谱
+
+        // 调整各组件的位置和大小
+        pb1.setMaxHeight(8);
+        pb1.setMinHeight(8);
+
+        // 频谱面板定位在进度条上方
+        spectrumPane.setTranslateY(-25); // 向上偏移
+
+        stackPane.getChildren().addAll(spectrumPane, pb1, sliderSong);
 
       //总时间标签
       labTotalTime = new Label("00:00");
       labTotalTime.setPrefWidth(40);
       labTotalTime.setPrefHeight(78);
-      labTotalTime.setTextFill(Color.rgb(243,243,238));
+      labTotalTime.setTextFill(Color.web("#1ed760"));
       labTotalTime.setAlignment(Pos.CENTER_RIGHT);
 
 
@@ -698,14 +748,14 @@ public class MainApp extends Application {
         //2.作者：Label
         Label labAuthor = new Label("Author:xyx");
         labAuthor.setPrefWidth(255);
-        labAuthor.setTextFill(Color.BLACK);//设置颜色
+        labAuthor.setTextFill(Color.web("#1ed760"));//设置颜色
         labAuthor.setFont(new javafx.scene.text.Font("黑体",18));//设置字体
         labAuthor.setAlignment(Pos.CENTER);
 
         //3.日期:Label
         Label labDate = new Label("日期：2099-01-10");
         labDate.setPrefWidth(255);
-        labDate.setTextFill(Color.BLACK);
+        labDate.setTextFill(Color.web("#cccccc"));
         labDate.setFont(new Font("黑体",18));
         labDate.setAlignment(Pos.CENTER);
 
@@ -759,9 +809,20 @@ public class MainApp extends Application {
             labGroupName.setMinHeight(0);
             labGroupName.setPrefHeight(15);
             labGroupName.setPrefWidth(150);
-            labGroupName.setTextFill(Color.rgb(0,0,0));
-            labGroupName.setOnMouseEntered(e->labGroupName.setTextFill(Color.DARKGREEN));
-            labGroupName.setOnMouseExited(e->labGroupName.setTextFill(Color.rgb(0,0,0)));
+            labGroupName.setTextFill(Color.web("#e0e0e0"));
+            labGroupName.setOnMouseEntered(e->{
+                 labGroupName.setTextFill(Color.web("#2ef770"));
+                labGroupName.setCursor(Cursor.HAND);
+            });
+            labGroupName.setOnMouseExited(e->{
+                labGroupName.setTextFill(Color.rgb(255,255,255));
+                labGroupName.setCursor(Cursor.DEFAULT);
+            });
+            labGroupName.setOnMouseClicked(e->{
+                //1.设置歌单名称
+                this.labGroupName.setText(labGroupName.getText().trim());
+                readAllSoundByGroupName();
+            });
 
             //3.播放图片
             ImageView iv2 = new ImageView("img/left/volume_1_Dark.png");
@@ -791,41 +852,13 @@ public class MainApp extends Application {
             lab3.setPrefWidth(15);
             lab3.setOnMouseEntered(e->iv3.setImage(new Image("img/left/add.png")));
             lab3.setOnMouseExited(e->iv3.setImage(new Image("img/left/addDark.png")));
-//            lab3.setOnMouseClicked(e->{
-//                //显示“打开文件对话框”
-//                FileChooser fileChooser = new FileChooser();
-//                fileChooser.setTitle("打开音乐文件");
-//                //过滤文件
-//                fileChooser.getExtensionFilters().addAll(
-//                        new FileChooser.ExtensionFilter("MP3","*.mp3"),
-//                        new FileChooser.ExtensionFilter("flac","*.flac"),
-//                        new FileChooser.ExtensionFilter("所有文件","*.*")
-//                );
-//                List<File> files = fileChooser.showOpenMultipleDialog(staticStage);
-//                if(files!= null && files.size() > 0){
-//                    //将集合中的每个文件路径写入到xml文件中
-//                    XMLUtils.insertSounds(labGroupName.getText().trim(),files);
-//                    // 刷新歌曲列表
-//                    XMLUtils.refreshSongList(this::readAllSoundByGroupName);
-//                }
-//            });
             lab3.setOnMouseClicked(e->{
-                //显示“打开文件对话框”
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("打开音乐文件");
-                //过滤文件
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("MP3","*.mp3"),
-                        new FileChooser.ExtensionFilter("flac","*.flac"),
-                        new FileChooser.ExtensionFilter("所有文件","*.*")
-                );
-                List<File> files = fileChooser.showOpenMultipleDialog(staticStage);
-                if(files!= null && files.size() > 0){
-                    //将集合中的每个文件路径写入到xml文件中
-                    XMLUtils.insertSounds(labGroupName.getText().trim(),files);
-                    // 刷新歌曲列表
-
-                }
+                // 先更新当前显示的歌单名称为目标歌单
+                this.labGroupName.setText(labGroupName.getText().trim());
+                // 通过工具方法弹出文件选择器并添加歌曲
+                XMLUtils.addSongsViaFileChooser(staticStage, labGroupName.getText().trim());
+                // 立即刷新当前歌单歌曲
+                readAllSoundByGroupName();
             });
 
 
@@ -878,7 +911,7 @@ public class MainApp extends Application {
     private BorderPane getTopPane() {
 
         //1.左侧的图片
-        ImageView imgeView = new ImageView("img/topandbottom/music-logo.png");
+        ImageView imgeView = new ImageView("img/left/musicplyer.png");
         imgeView.setFitHeight(50);
         imgeView.setPreserveRatio(true);
 
@@ -973,9 +1006,9 @@ public class MainApp extends Application {
         rct.setHeight(2);
         //设置背景色--渐变
         Stop[] stops = new Stop[]{
-                new Stop(0,Color.rgb(81,163,90)),
-                new Stop(0.5,Color.rgb(5,237,44)),
-                new Stop(1,Color.rgb(81,163,90))
+                new Stop(0,Color.web("#0a8a35")),
+                new Stop(0.5,Color.web("#1ed760")),
+                new Stop(1,Color.web("#0a8a35"))
         };
         rct.setFill(new LinearGradient(0,0,1,1,true, CycleMethod.NO_CYCLE,stops));
 
@@ -999,8 +1032,8 @@ public class MainApp extends Application {
         }) ;
         return topPane;
     }
-    //读取某个歌单的所有歌曲
-    private void readAllSoundByGroupName() {
+    //读取某个歌单的所有歌曲（供内部调用）
+    private void readAllSoundByGroupNameInternal() {
         //1.读取此歌单下所有的歌曲
         List<SoundBean> soundList = XMLUtils.findSoundByGroupName(this.labGroupName.getText().trim());
         //2.将每个歌曲信息封装到PlayBean对象中
@@ -1034,31 +1067,6 @@ public class MainApp extends Application {
             String strLength = audioHeader.getTrackLengthAsString();
             //转换为int类型的时长
             int intLength = audioHeader.getTrackLength();
-
-//            Set<String> keySet =  mp3File.getID3v2Tag().frameMap.keySet();
-//            String songName = null;
-//            String artist = null;
-//            String album = null;
-//
-//            if(keySet.contains("TIT2")) {
-//                songName = mp3File.getID3v2Tag().frameMap.get("TIT2").toString();
-//            }
-//            if(keySet.contains("TPE1")){
-//                artist = mp3File.getID3v2Tag().frameMap.get("TPE1").toString();
-//            }
-//            if(keySet.contains("TALB")){
-//                album = mp3File.getID3v2Tag().frameMap.get("TALB").toString();
-//            }
-//            System.out.println("歌名:"+songName + ",歌手:"+artist + ",专辑:"+album);
-//            if(songName != null && !songName.equals("null")){
-//                songName = songName.substring(songName.indexOf("\"")+1,songName.lastIndexOf("\""));
-//            }
-//            if(artist != null && !artist.equals("null")){
-//                artist = artist.substring(artist.indexOf("\"")+1,artist.lastIndexOf("\""));
-//            }
-//            if(album != null && !album.equals("null")){
-//                album = album.substring(album.indexOf("\"")+1,album.lastIndexOf("\""));
-//            }
 
             AbstractID3v2Tag id3v2Tag = mp3File.getID3v2Tag();
             String songName = null;
@@ -1150,7 +1158,7 @@ public class MainApp extends Application {
 
                         //歌词变色
                         Label lab_current = (Label)lrcVBox.getChildren().get(currentLrcIndex);
-                        lab_current.setTextFill(Color.rgb(80,228,29));
+                        lab_current.setTextFill(Color.web("#1ed760"));  // 当前播放歌词
 
                         Timeline t2 = new Timeline(new KeyFrame(Duration.millis(30),
                                 new EventHandler<ActionEvent>() {
@@ -1254,6 +1262,16 @@ public class MainApp extends Application {
                 this.currentPlayBean.getMediaPlayer().stop();
                 //2.停止光盘的转动
                 this.timeline.stop();
+
+                // 停止频谱动画
+                if (spectrumTimeline != null) {
+                    spectrumTimeline.stop();
+                }
+                // 清除频谱
+                if (spectrumPane != null) {
+                    spectrumPane.clear();
+                }
+
                 //设置歌词位置
                 this.lrcVBox.getChildren().clear();
                 this.lrcVBox.setLayoutY(50*2-10);
@@ -1369,6 +1387,13 @@ public class MainApp extends Application {
 
     //播放音乐
     private void play() {
+        if (spectrumTimeline != null) {
+            spectrumTimeline.stop();
+            spectrumTimeline.play();
+        }
+        if (spectrumPane != null) {
+            spectrumPane.clear();
+        }
         //读取歌词
         loadLrc();
         //1.设置总时间
@@ -1508,7 +1533,7 @@ public class MainApp extends Application {
                 lab.setAlignment(Pos.CENTER);
 
                 if(this.lrcVBox.getChildren().size() == 0){
-                    lab.setTextFill(Color.rgb(80,228,29));
+                    lab.setTextFill(Color.web("#666666"));  // 未播放歌词
                     lab.setFont(new Font("黑体",30));
                 }
                 if(this.lrcVBox.getChildren().size() == 1){
@@ -1541,9 +1566,11 @@ public class MainApp extends Application {
 
     }
 
+
     public static void main(String[] args) {
         // 启动登录/注册选择界面
         javafx.application.Application.launch(LoginRegisterChoiceView.class, args);
+//        javafx.application.Application.launch(MainApp.class, args);
     }
 
     public static void launchApp(Stage primaryStage) {
@@ -1554,5 +1581,30 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
-}
+
+    /**
+     * 设置当前歌单名称
+     * @param groupName 歌单名称
+     */
+    public void setGroupName(String groupName) {
+        if (labGroupName != null) {
+            labGroupName.setText(groupName);
+        }
+    }
+
+    /**
+     * 根据当前歌单名称读取所有歌曲
+     */
+    public void readAllSoundByGroupName() {
+        // 调用原有的私有方法
+        readAllSoundByGroupNameInternal();
+    }
+
+    // 重命名原方法为内部方法
+    //private void readAllSoundByGroupNameInternal() {
+        // 原有的readAllSoundByGroupName方法逻辑
+        // 由于原方法是private的，我们需要将其内容移到这里
+        // 这里暂时留空，实际使用时需要将原方法的内容复制过来
+    }
+
 

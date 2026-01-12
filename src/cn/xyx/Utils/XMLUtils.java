@@ -20,7 +20,7 @@ import java.util.List;
 
 public class XMLUtils {
 
-    // =====【新增】歌单刷新回调=====
+
     private static Runnable refreshCallback;
 
     public static void setSongListRefreshCallback(Runnable callback) {
@@ -32,6 +32,24 @@ public class XMLUtils {
             refreshCallback.run();
         }
     }
+
+    // 弹出文件选择器并将所选歌曲添加到指定歌单
+    public static void addSongsViaFileChooser(javafx.stage.Stage stage, String groupName) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("打开音乐文件");
+        fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("MP3", "*.mp3"),
+                new javafx.stage.FileChooser.ExtensionFilter("flac", "*.flac"),
+                new javafx.stage.FileChooser.ExtensionFilter("所有文件", "*.*")
+        );
+        List<File> files = fileChooser.showOpenMultipleDialog(stage);
+        if (files != null && !files.isEmpty()) {
+            insertSounds(groupName, files);
+            // 显式通知刷新，参考 deleteSound 的刷新行为
+            notifySongListChanged();
+        }
+    }
+
     public static List<String> readAllGroup() {
         //1.创建一个List<Stirng>集合对象
         List<String> groupList = new ArrayList<>();
@@ -80,6 +98,7 @@ public class XMLUtils {
             XMLWriter xmlWriter = new XMLWriter(new FileWriter(new File("MusicPlyerMoudle/src/MusicGroup.xml")),outputFormat);
             xmlWriter.write(dom);
             xmlWriter.close();
+            notifySongListChanged();
         }catch (DocumentException e){
             e.printStackTrace();
         }catch (IOException e) {
@@ -114,7 +133,7 @@ public class XMLUtils {
             XMLWriter xmlWriter = new XMLWriter(new FileWriter(new File("MusicPlyerMoudle/src/MusicGroup.xml")),outputFormat);
             xmlWriter.write(dom);
             xmlWriter.close();
-            notifySongListChanged();
+
 
         }catch(DocumentException e){
             e.printStackTrace();
@@ -144,6 +163,7 @@ public class XMLUtils {
             XMLWriter xmlWriter = new XMLWriter(new FileWriter(new File("MusicPlyerMoudle/src/MusicGroup.xml")),outputFormat);
             xmlWriter.write(dom);
             xmlWriter.close();
+            notifySongListChanged();
         }catch(DocumentException e){
             e.printStackTrace();
         }catch (IOException e) {
@@ -242,11 +262,5 @@ public class XMLUtils {
             e.printStackTrace();
         }
     }
-
-
-
-
-    // XMLUtils.java
-
 
 }
